@@ -8,4 +8,12 @@ Rails.application.routes.draw do
       resources :groups, only:[:create, :destroy, :update, :show]
     end
   end
+
+  namespace :api do
+    namespace :v1 do
+      resources :assigns, only:[:create, :destroy]
+    end
+  end
+
+
 end
