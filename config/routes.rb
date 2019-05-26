@@ -3,4 +3,9 @@ Rails.application.routes.draw do
     registrations: 'auth/registrations'
   }
   post 'image_file/upload'
+  namespace :api do
+    namespace :v1 do
+      resources :groups, only:[:create, :destroy, :update, :show]
+    end
+  end
 end
