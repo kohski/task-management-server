@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_26_090529) do
+ActiveRecord::Schema.define(version: 2019_05_26_101818) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,21 @@ ActiveRecord::Schema.define(version: 2019_05_26_090529) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "jobs", force: :cascade do |t|
+    t.integer "group_id"
+    t.string "title", null: false
+    t.text "overview"
+    t.string "image"
+    t.integer "owner_id"
+    t.datetime "base_date_time"
+    t.datetime "due_date_time"
+    t.integer "frequency", default: 0
+    t.boolean "is_done"
+    t.boolean "is_approved"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "provider", default: "email", null: false
     t.string "uid", default: "", null: false
@@ -56,5 +71,9 @@ ActiveRecord::Schema.define(version: 2019_05_26_090529) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "assigns", "groups"
+  add_foreign_key "assigns", "users"
   add_foreign_key "groups", "users", column: "owner_id"
+  add_foreign_key "jobs", "groups"
+  add_foreign_key "jobs", "users", column: "owner_id"
 end

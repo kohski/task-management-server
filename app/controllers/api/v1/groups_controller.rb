@@ -3,26 +3,20 @@ class Api::V1::GroupsController < ApplicationController
 
   def show
     group = Group.find_by(id: params[:id])
-    # after making assign model, will make access restriction. only owner and user can access this info,
-    # if not either owner or team mate return error message.
-    render json: {
-      status: "SUCCESS",
-      data: group
-    }
+
+    if group
+      response_success(group);
+    else
+      response_bad_request();
+    end
   end
 
   def create
     group = current_user.groups.build(group_params)
     if group.save
-      render json: {
-        status: "SUCCESS",
-        data: group
-      }
+      response_created(group):
     else
-      render json: {
-        status: "ERROR",
-        data: group.errors.full_messages
-      }
+      response_bad_request();
     end
   end
 
@@ -30,29 +24,18 @@ class Api::V1::GroupsController < ApplicationController
     group = Group.find_by(id: params[:id])
     begin
       group.destroy
-      render json: {
-        status: "SUCCESS",
-      }
+      response_success(group)
     rescue
-      render json:{
-        status: "ERROR",
-        data: "ERROR has occured"
-      }
+      response_bad_request();
     end
   end
 
   def update
     group = Group.find_by(id: params[:id])
     if group.update(group_params)
-      render json: {
-        status: "SUCCESS",
-        data: group
-      }
+      response_success(group)
     else
-      render json: {
-        status: "ERROR",
-        data: group.errors.full_messages
-      }
+      response_bad_request();
     end
   end
 

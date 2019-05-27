@@ -41,5 +41,6 @@ module TaskApiServer
           :methods => [:get, :post, :options, :put, :delete]
       end
     end
+    config.autoload_paths += Dir["#{config.root}/app/validators"]
   end
 end
