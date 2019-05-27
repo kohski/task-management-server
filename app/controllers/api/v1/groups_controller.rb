@@ -1,5 +1,4 @@
 class Api::V1::GroupsController < ApplicationController
-  before_action :authenticate_user!	
 
   def show
     group = Group.find_by(id: params[:id])

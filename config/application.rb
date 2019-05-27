@@ -1,5 +1,6 @@
 require_relative 'boot'
 
+
 require "rails"
 # Pick the frameworks you want:
 require "active_model/railtie"
@@ -42,5 +43,13 @@ module TaskApiServer
       end
     end
     config.autoload_paths += Dir["#{config.root}/app/validators"]
+
+    config.generators do |g|
+      g.test_framework :rspec,
+      view_specs: false,
+      helper_specs: false,
+      routing_specs: false
+    end
+
   end
 end
