@@ -4,18 +4,18 @@ class Api::V1::GroupsController < ApplicationController
     group = Group.find_by(id: params[:id])
 
     if group
-      response_success(group);
+      response_created(group)
     else
-      response_bad_request();
+      response_bad_request()
     end
   end
 
   def create
     group = current_user.groups.build(group_params)
     if group.save
-      response_created(group):
+      response_created(group)
     else
-      response_bad_request();
+      response_bad_request()
     end
   end
 
@@ -25,7 +25,7 @@ class Api::V1::GroupsController < ApplicationController
       group.destroy
       response_success(group)
     rescue
-      response_bad_request();
+      response_bad_request()
     end
   end
 
@@ -34,7 +34,7 @@ class Api::V1::GroupsController < ApplicationController
     if group.update(group_params)
       response_success(group)
     else
-      response_bad_request();
+      response_bad_request()
     end
   end
 
