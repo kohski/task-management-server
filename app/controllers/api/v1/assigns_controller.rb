@@ -1,9 +1,9 @@
 class Api::V1::AssignsController < ApplicationController
+  before_action :authenticate_user!	
 
   def create
-
-    if Assign.assign_existing?(assign_params)
-      response_success
+    if results = Assign.assign_existing?(assign_params)
+      response_success(results[0])
       return
     end
 
@@ -11,6 +11,13 @@ class Api::V1::AssignsController < ApplicationController
 
     unless group
       response_not_found(group)
+      return
+    end
+
+    user = User.find_by(id: assign_params[:user_id]);
+
+    unless user
+      response_not_found(user)
       return
     end
 

@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
-  # before_action :authenticate_user!	
 
   def response_success(class_instance = "")
     render(
@@ -41,7 +40,7 @@ class ApplicationController < ActionController::API
       json: { 
         status: 404,
         message: "#{class_instance.class} Not Found",
-        data: class_instance
+        data: class_instance.nil? ? class_instance : class_instance.errors.full_messages
       }      
     )
   end
