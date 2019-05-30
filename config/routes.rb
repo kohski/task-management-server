@@ -20,4 +20,9 @@ Rails.application.routes.draw do
       resources :jobs, only:[:create, :destroy, :update, :show, :index]
     end
   end
+  namespace :api do
+    namespace :v1 do
+      resources :steps, only:[:create, :destroy, :update, :show, :index]
+    end
+  end
 end

@@ -34,6 +34,19 @@ class ApplicationController < ActionController::API
     ) 
   end
 
+  def response_bad_request_with_notes(class_instance, notes)
+    render(
+      status: 400,
+      json: {
+        status: 400,
+        message: "Bad Request",
+        data: class_instance.nil? ? class_instance : class_instance.errors.full_messages,
+        notes: notes
+      }
+    ) 
+  end
+
+
   def response_not_found(class_instance)
     render(
       status: 404,
@@ -44,5 +57,6 @@ class ApplicationController < ActionController::API
       }      
     )
   end
+
 
 end

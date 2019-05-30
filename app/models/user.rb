@@ -12,4 +12,5 @@ class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
   has_many :groups, foreign_key: :owner_id
   has_many :assigns, dependent: :destroy
+
 end

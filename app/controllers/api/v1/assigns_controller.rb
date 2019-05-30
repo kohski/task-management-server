@@ -8,18 +8,21 @@ class Api::V1::AssignsController < ApplicationController
     end
 
     group   = Group.find_by(id: assign_params[:group_id]);
-
     unless group
       response_not_found(group)
       return
     end
 
     user = User.find_by(id: assign_params[:user_id]);
-
     unless user
       response_not_found(user)
       return
     end
+
+    # if user.id === group.owner_id
+    #   response_bad_request_with_notes(user, "#{user.name} is already owner of #{group.name}")
+    #   return
+    # end
 
     assign = group.assigns.build(assign_params);
     if assign.save
