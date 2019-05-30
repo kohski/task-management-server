@@ -1,13 +1,13 @@
 class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
-  before_action :authenticate_user!	
+  # before_action :authenticate_user!	
 
   def response_success(class_instance = "")
     render(
       status: 200,
       json:{
         status: 200,
-        message: "Success #{class_instance = "" ? "" : class_instance.class}",
+        message: "Success #{class_instance == "" ? "" : class_instance.class}",
         data: class_instance
       }
     )
@@ -30,7 +30,7 @@ class ApplicationController < ActionController::API
       json: {
         status: 400,
         message: "Bad Request",
-        data: class_instance
+        data: class_instance.nil? ? class_instance : class_instance.errors.full_messages
       }
     ) 
   end

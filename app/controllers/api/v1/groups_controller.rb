@@ -6,7 +6,7 @@ class Api::V1::GroupsController < ApplicationController
     if group
       response_created(group)
     else
-      response_bad_request()
+      response_bad_request(group)
     end
   end
 
@@ -15,17 +15,16 @@ class Api::V1::GroupsController < ApplicationController
     if group.save
       response_created(group)
     else
-      response_bad_request()
+      response_bad_request(group)
     end
   end
 
   def destroy
-    group = Group.find_by(id: params[:id])
-    begin
+    if group = Group.find_by(id: params[:id])
       group.destroy
       response_success(group)
-    rescue
-      response_bad_request()
+    else
+      response_bad_request(group)
     end
   end
 
