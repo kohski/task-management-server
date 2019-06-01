@@ -5,6 +5,8 @@ class Group < ApplicationRecord
   has_many :assigns, dependent: :destroy
   has_many :users, through: :assigns
   has_many :jobs
+  has_many :steps, through: :jobs
+
   validates :name, presence: true, uniqueness: true
 
   def auto_assign_owner

@@ -26,10 +26,18 @@ class Api::V1::JobsController < ApplicationController
   end
 
   def update
+
     job = Job.find_by(id: params[:id])
+
     unless job
       response_not_found(job)
     end
+      
+    if job_params[:group_id] && !Group.find_by(id: job_params[:group_id])     
+      response_not_found_with_notes(job.attributes, "group is not found")
+      return
+    end
+
     if job.update(job_params)
       response_success(job)
     else
@@ -41,8 +49,10 @@ class Api::V1::JobsController < ApplicationController
     job = Job.find_by(id: params[:id])
     unless job
       response_not_found(job)
+      return
     end
-    if job.destroy(job_params)
+
+    if job.destroy
       response_success(job)
     else
       response_bad_request(job)
@@ -51,8 +61,16 @@ class Api::V1::JobsController < ApplicationController
 
   def index
     jobs = Job.all
+
+    if jobs.length == 0
+      response_not_found(jobs)
+      return
+    end
+
+    # at first get ids of groups which current user belongs to.
+    # next get jobs info from group ids
     group_ids = Assign.where(user_id: current_user.id).pluck(:group_id)
-    jobs = Job.where(id: group_ids)
+    jobs = Job.where(group_id: group_ids)
 
     if jobs.length > 0
       response_success(jobs)

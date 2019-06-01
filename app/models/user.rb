@@ -10,7 +10,8 @@ class User < ActiveRecord::Base
         #  :trackable,
         :validatable
   include DeviseTokenAuth::Concerns::User
-  has_many :groups, foreign_key: :owner_id
-  has_many :assigns, dependent: :destroy
 
+  has_many :assigns, dependent: :destroy
+  has_many :groups, dependent: :destroy, foreign_key: :owner_id
+  has_many :steps, dependent: :destroy
 end

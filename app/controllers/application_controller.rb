@@ -46,17 +46,27 @@ class ApplicationController < ActionController::API
     ) 
   end
 
-
-  def response_not_found(class_instance)
+  def response_not_found(class_instance)  
     render(
       status: 404,
       json: { 
         status: 404,
         message: "#{class_instance.class} Not Found",
-        data: class_instance.nil? ? class_instance : class_instance.errors.full_messages
+        data: class_instance.nil?  || class_instance.empty? ? class_instance : class_instance.errors.full_messages
       }      
     )
   end
 
+  def response_not_found_with_notes(class_instance,notes)  
+    render(
+      status: 404,
+      json: { 
+        status: 404,
+        message: "#{class_instance.class} Not Found",
+        data: nil,
+        notes: notes
+      }      
+    )
+  end
 
 end

@@ -2,8 +2,10 @@ class Api::V1::AssignsController < ApplicationController
   before_action :authenticate_user!	
 
   def create
-    if results = Assign.assign_existing?(assign_params)
-      response_success(results[0])
+    already_exist = Assign.assign_existing?(assign_params)
+
+    if already_exist
+      response_success(already_exist[0].attributes)
       return
     end
 
@@ -18,11 +20,6 @@ class Api::V1::AssignsController < ApplicationController
       response_not_found(user)
       return
     end
-
-    # if user.id === group.owner_id
-    #   response_bad_request_with_notes(user, "#{user.name} is already owner of #{group.name}")
-    #   return
-    # end
 
     assign = group.assigns.build(assign_params);
     if assign.save

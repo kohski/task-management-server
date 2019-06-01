@@ -7,7 +7,7 @@ RSpec.describe "Assigns", type: :request do
       it "return 201 with valid request" do
         user = FactoryBot.create(:user)
         group = FactoryBot.create(:group)
-        post api_v1_assigns_path, headers: User.first.create_new_auth_token, params: { assign: {user_id: user.id, group_id: group.id} }
+        post api_v1_assigns_path, headers: User.first.create_new_auth_token, params: { assign: {user_id: user.id, group_id: group.id}}
         res_str = JSON.parse(response.body)
         assign = Assign.find_by(id: res_str["data"]["id"])
         expect(res_str["status"]).to be(201)
@@ -18,11 +18,14 @@ RSpec.describe "Assigns", type: :request do
       end
 
       it "return 200 with duplicate assign" do
-        assign = FactoryBot.create(:assign)
-        post api_v1_assigns_path, headers: User.first.create_new_auth_token, params: { assign: {user_id: assign.user_id, group_id: assign.group_id} }
+        group = FactoryBot.create(:group)
+        assign = Assign.first
+        post api_v1_assigns_path, headers: User.first.create_new_auth_token, params: { assign: {user_id: assign.user_id, group_id: assign.group_id}}
+
         res_str = JSON.parse(response.body)
+
         expect(res_str["status"]).to be(200)
-        expect(res_str["message"]).to eq("Success Assign")
+        expect(res_str["message"]).to include("Success")
         expect(res_str["data"]["id"]).to eq(assign.id)
         expect(res_str["data"]["group_id"]).to eq(assign.group_id)
         expect(res_str["data"]["user_id"]).to eq(assign.user_id)
@@ -33,7 +36,7 @@ RSpec.describe "Assigns", type: :request do
         post api_v1_assigns_path, headers: User.first.create_new_auth_token, params: { assign: {user_id: assign.user_id, group_id: (assign.group_id + 1)} }
         res_str = JSON.parse(response.body)
         expect(res_str["status"]).to be(404)
-        expect(res_str["message"]).to eq("NilClass Not Found")
+        expect(res_str["message"]).to include("Not Found")
         expect(res_str["data"]).to be(nil)
       end
       
@@ -43,7 +46,7 @@ RSpec.describe "Assigns", type: :request do
         post api_v1_assigns_path, headers: User.first.create_new_auth_token, params: { assign: {user_id: (assign.user_id+1), group_id: assign.group_id } }
         res_str = JSON.parse(response.body)
         expect(res_str["status"]).to be(404)
-        expect(res_str["message"]).to eq("NilClass Not Found")
+        expect(res_str["message"]).to include("Not Found")
         expect(res_str["data"]).to be(nil)
       end
 
@@ -56,7 +59,7 @@ RSpec.describe "Assigns", type: :request do
         delete api_v1_assigns_path + "/" + assign.id.to_s, headers: User.first.create_new_auth_token
         res_str = JSON.parse(response.body)
         expect(res_str["status"]).to be(200)
-        expect(res_str["message"]).to eq("Success Assign")
+        expect(res_str["message"]).to include("Success")
         expect(res_str["data"]["id"]).to eq(assign.id)
         expect(res_str["data"]["group_id"]).to eq(assign.group_id)
         expect(res_str["data"]["user_id"]).to eq(assign.user_id)

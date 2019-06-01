@@ -24,8 +24,12 @@ RSpec.describe Assign, type: :model do
   context "class method" do
     context "when duplicate assign request recieve" do
       it "return true from assign_existing method" do
-        assign = FactoryBot.create(:assign)
-        expect(Assign.assign_existing?(group_id: assign.group_id, user_id: assign.user_id)).to be(true)
+        user = FactoryBot.create(:user)
+        group = FactoryBot.create(:group)  
+        assign = Assign.first        
+        answer = Assign.assign_existing?(group_id: assign.group_id, user_id: assign.user_id)
+        expect(answer[0][:user_id]).to be(assign.user_id)
+        expect(answer[0][:group_id]).to be(assign.group_id)
       end
     end
   end

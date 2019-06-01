@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_30_063851) do
+ActiveRecord::Schema.define(version: 2019_06_01_053518) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,8 +54,8 @@ ActiveRecord::Schema.define(version: 2019_05_30_063851) do
 
   create_table "steps", force: :cascade do |t|
     t.integer "job_id", null: false
-    t.string "name", null: false
-    t.integer "assgined_user"
+    t.string "content", null: false
+    t.integer "assigned_user"
     t.string "image"
     t.datetime "due_date"
     t.boolean "is_done"
