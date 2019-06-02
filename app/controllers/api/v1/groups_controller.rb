@@ -1,5 +1,5 @@
 class Api::V1::GroupsController < ApplicationController
-  before_action :authenticate_user!	
+  before_action :authenticate_api_v1_user!	
 
   def show
     group = Group.find_by(id: params[:id])
@@ -12,7 +12,7 @@ class Api::V1::GroupsController < ApplicationController
   end
 
   def create
-    group = current_user.groups.build(group_params)
+    group = current_api_v1_user.groups.build(group_params)
     if group.save
       response_created(group)
     else
@@ -31,10 +31,25 @@ class Api::V1::GroupsController < ApplicationController
 
   def update
     group = Group.find_by(id: params[:id])
+
+    unless group
+      response_not_found_with_notes(group, "group is not found")
+      return
+    end
+
     if group.update(group_params)
       response_success(group)
     else
-      response_bad_request()
+      response_bad_request(group)
+    end
+  end
+
+  def index
+    groups = current_api_v1_user.groups
+    if groups.empty?
+      response_not_found(groups)
+    else
+      response_success(groups)
     end
   end
 
@@ -43,5 +58,4 @@ class Api::V1::GroupsController < ApplicationController
   def group_params
     params.require(:group).permit(:name)
   end
-
 end

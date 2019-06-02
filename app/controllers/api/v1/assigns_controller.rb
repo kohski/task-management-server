@@ -1,5 +1,5 @@
 class Api::V1::AssignsController < ApplicationController
-  before_action :authenticate_user!	
+  before_action :authenticate_api_v1_user!	
 
   def create
     already_exist = Assign.assign_existing?(assign_params)

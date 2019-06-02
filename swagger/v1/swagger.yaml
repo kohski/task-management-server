@@ -1,699 +1,1934 @@
 swagger: "2.0"
 info:
-  description: "This is a Task management application for DIC graduation task."
+  description: "ポートフォリオ用のタスク管理アプリケーション"
   version: "1.0.0"
-  title: "Swagger Petstore"
+  title: "Task Management API"
   termsOfService: "http://swagger.io/terms/"
   contact:
-    email: "apiteam@swagger.io"
+    email: ""
   license:
     name: "MIT"
-    url: ""
-host: "petstore.swagger.io"
-basePath: "http://localhost:3000/api/v1"
+    url: "https://opensource.org/licenses/MIT"
+host: "localhost:3000"
+basePath: "/api/v1"
 tags:
-- name: "group"
-  description: "Group information one user made and he/she became owner"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-- name: "job"
-  description: "about job assciated with group"
 - name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
+  description: "ユーザー管理用のmodel。devise gem使用につきエンドポイントは/auth"
+- name: "group"
+  description: "userが任意の個数groupを作成できる。groupは1人のuserをownerとして要求する。"
+- name: "assign"
+  description: "userとgroupの中間テーブル"
+- name: "job"
+  description: "groupに紐づく形で任意の個数jobを作成することができる"
+- name: "step"
+  description: "jobに紐づく形で任意の個数stepを作成可能"
 schemes:
 - "http"
 paths:
-  /pet:
+  /auth:
     post:
       tags:
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
-      operationId: "addPet"
+      - "user"
+      summary: "SignUp用のパス"
+      description: "name, email, passwordでuserのsignupする"
+      operationId: "auth"
       consumes:
       - "application/json"
-      - "application/xml"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
+        name: "sign_up"
+        description: "サインアップ用パラメータ"
         required: true
         schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    put:
-      tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByStatus:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findPetsByStatus"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
+          type: object
+          properties:
+            name:
+              type: "string"
+              example: "test user"
+            email:
+              type: "string"
+              example: "test@example.com"
+            password:
+              type: "password"
+              format: "password"
+              example: "password"
       responses:
         200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /pet/{petId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet by ID"
-      description: "Returns a single pet"
-      operationId: "getPetById"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
-    post:
-      tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      description: ""
-      operationId: "updatePetWithForm"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    delete:
-      tags:
-      - "pet"
-      summary: "Deletes a pet"
-      description: ""
-      operationId: "deletePet"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/{petId}/uploadImage:
-    post:
-      tags:
-      - "pet"
-      summary: "uploads an image"
-      description: ""
-      operationId: "uploadFile"
-      consumes:
-      - "multipart/form-data"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to update"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/inventory:
-    get:
-      tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
+          description: "成功時のレスポンス"
           schema:
             type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-      - api_key: []
-  /store/order:
-    post:
-      tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
-        required: true
-        schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
+            properties:
+              status:
+                type: "string"
+                example: "success"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  provider:
+                    type: "integer"
+                    example: "email"
+                  uid: 
+                    type: "integer"
+                    example: "fource@test.com"
+                  allow_password_change:
+                    type: "integer"
+                    example: false
+                  name: 
+                    type: "integer"
+                    example: "fource"
+                  image: 
+                    type: "object"
+                    properties:
+                      url: 
+                        type: "string"
+                        exampmle: "base64url"
+                  email:
+                    type: "integer"
+                    example: "fource@test.com"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        422:
+          description: "失敗時のレスポンス"
           schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
-    get:
-      tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.         Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10.0
-        minimum: 1.0
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
-      tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1.0
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /user:
-    post:
-      tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithArray:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/login:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                example: "error"
+              data:
+                type: "object"
+                properties:
+                  some-properties: "some properties..."
+              errors:
+                type: "object"
+                properties:
+                  full_messages:
+                    type: "array"
+                    items:
+                      type: "string"
+                      example: ["password can't be blank","Email has already been taken"]
+  /auth/validate_token:
     get:
       tags:
       - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
+      summary: "tokenのvalidation"
+      description: "tokenの検証用のpath"
+      operationId: "/auth/validate_token"
+      consumes:
+      - "application/json"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
+      - in: "header"
+        name: "access-token"
+        description: "access-token"
         required: true
         type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
+      - in: "header"
+        name: "uid"
+        description: "uid(email)"
+        required: true
+        type: "string"
+      - in: "header"
+        name: "client"
+        description: "client"
         required: true
         type: "string"
       responses:
         200:
-          description: "successful operation"
+          description: "成功時のレスポンス"
           schema:
-            type: "string"
-          headers:
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                example: "success"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  provider:
+                    type: "integer"
+                    example: "email"
+                  uid: 
+                    type: "integer"
+                    example: "fource@test.com"
+                  allow_password_change:
+                    type: "integer"
+                    example: false
+                  name: 
+                    type: "integer"
+                    example: "fource"
+                  image: 
+                    type: "object"
+                    properties:
+                      url: 
+                        type: "string"
+                        exampmle: "base64url"
+                  email:
+                    type: "integer"
+                    example: "fource@test.com"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        401:
+          description: "失敗時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: false
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Invalid login credentials"
+  /auth/validate_token:
     get:
       tags:
       - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/xml"
+      summary: "tokenのvalidation"
+      description: "tokenの検証用のpath"
+      operationId: "/auth/validate_token"
+      consumes:
       - "application/json"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
+      - in: "header"
+        name: "access-token"
+        description: "access-token"
+        required: true
+        type: "string"
+      - in: "header"
+        name: "uid"
+        description: "uid(email)"
+        required: true
+        type: "string"
+      - in: "header"
+        name: "client"
+        description: "client"
         required: true
         type: "string"
       responses:
         200:
-          description: "successful operation"
+          description: "成功時のレスポンス"
           schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                example: "success"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  provider:
+                    type: "integer"
+                    example: "email"
+                  uid: 
+                    type: "integer"
+                    example: "fource@test.com"
+                  allow_password_change:
+                    type: "integer"
+                    example: false
+                  name: 
+                    type: "integer"
+                    example: "fource"
+                  image: 
+                    type: "object"
+                    properties:
+                      url: 
+                        type: "string"
+                        exampmle: "base64url"
+                  email:
+                    type: "integer"
+                    example: "fource@test.com"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        401:
+          description: "失敗時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: false
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Invalid login credentials"
+  /auth/password:
     put:
       tags:
       - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
+      summary: "password変更"
+      description: "password変更用"
+      operationId: "/auth/password"
+      consumes:
+      - "application/json"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
       - in: "body"
-        name: "body"
-        description: "Updated user object"
+        name: "password info"
+        description: "passowrd and password_confirmation"
         required: true
         schema:
-          $ref: "#/definitions/User"
+          type: object
+          properties:
+            password:
+              type: "string"
+              example: "pasword"
+            password_confirmation:
+              type: "string"
+              example: "pasword"
       responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  provider:
+                    type: "integer"
+                    example: "email"
+                  uid: 
+                    type: "integer"
+                    example: "fource@test.com"
+                  allow_password_change:
+                    type: "integer"
+                    example: false
+                  name: 
+                    type: "integer"
+                    example: "fource"
+                  image: 
+                    type: "object"
+                    properties:
+                      url: 
+                        type: "string"
+                        exampmle: "base64url"
+                  email:
+                    type: "integer"
+                    example: "fource@test.com"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        401:
+          description: "認証エラー時"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: false
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Unauthorized"
+        422:
+          description: "パスワード確認エラー時"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: false
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Password confirmation doesn't match Password"
+  /auth/sign_in:
+    post:
+      tags:
+      - "user"
+      summary: "log in"
+      description: "log in用"
+      operationId: "devise_token_auth/sessions#create"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "log in"
+        description: "email/passwordによりlogin"
+        required: true
+        schema:
+          type: object
+          properties:
+            email:
+              type: "string"
+              example: "test2@example.com"
+            password:
+              type: "string"
+              example: "pasword"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  provider:
+                    type: "integer"
+                    example: "email"
+                  uid: 
+                    type: "integer"
+                    example: "fource@test.com"
+                  allow_password_change:
+                    type: "integer"
+                    example: false
+                  name: 
+                    type: "integer"
+                    example: "fource"
+                  image: 
+                    type: "object"
+                    properties:
+                      url: 
+                        type: "string"
+                        exampmle: "base64url"
+                  email:
+                    type: "integer"
+                    example: "fource@test.com"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        401:
+          description: "認証エラー時"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: false
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Unauthorized"
+        422:
+          description: "パスワード確認エラー時"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: false
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Password confirmation doesn't match Password"
+  /auth/sign_out:
     delete:
       tags:
       - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
+      summary: "log out"
+      description: "log out"
+      operationId: "devise_token_auth/sessions#destroy"
+      consumes:
+      - "application/json"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
+      - in: "body"
+        name: "log out"
+        description: "log out"
         required: true
-        type: "string"
+        schema:
+          type: object
       responses:
-        400:
-          description: "Invalid username supplied"
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
         404:
-          description: "User not found"
-securityDefinitions:
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:pets: "modify pets in your account"
-      read:pets: "read your pets"
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-definitions:
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-        default: false
-    xml:
-      name: "Order"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          name: "photoUrl"
-          wrapped: true
-        items:
-          type: "string"
+          description: "ログアウト済なのにログアウトした場合のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: false
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "User was not found or was not logged in."
+  /groups:
+    post:
       tags:
-        type: "array"
-        xml:
-          name: "tag"
-          wrapped: true
-        items:
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+      - "group"
+      summary: "groupのポスト用"
+      description: "groupの新規作成用"
+      operationId: "group#create"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "name"
+        description: "group作成用パラメータ。全体でユニーク制約。"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "test group name"
+      responses:
+        201:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                example: "success"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  owner_id:
+                    type: "string"
+                    example: 3
+                  name: 
+                    type: "string"
+                    example: "test@test.com"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        400:
+          description: "name重複時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: Bad Request
+              data:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Name has already been taken"
+        401:
+          description: "name重複時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "You need to sign in or sign up before continuing."
+      security:
+      - access-token: 
+        uid:
+        client:
+    get:
+      tags:
+      - "group"
+      summary: "group一覧"
+      description: "groupの一覧情報を取得"
+      operationId: "group#index"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        201:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                example: "success"
+              message:
+                type: "string"
+                example: "Success Group::ActiveRecord_Associations_CollectionProxy"
+              data:
+                type: "array"
+                items:
+                  type: "object"
+                  example:
+                    id: 1
+                    owner_id: 3
+                    name: "test user"
+                    created_at: "2019-06-01T12:01:22.868Z"
+                    updated_at: "2019-06-01T12:01:22.929Z"
+        401:
+          description: "認証エラー時の処理"
+          schema:
+            type: "object"
+            properties:
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "You need to sign in or sign up before continuing."
+        404:
+          description: "カレントユーザー傘下にgroupがない時のresponse"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "Group::ActiveRecord_Associations_CollectionProxy Not Found"
+              data:
+                type: "array"
+                items:
+                  type: 
+                  example: 
+      security:
+      - access-token: 
+        uid:
+        client:
+  /groups/{group_id}:
+    get:
+      tags:
+      - "group"
+      summary: "groupのshow"
+      description: "個別groupの参照"
+      operationId: "group#show"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "group_id"
+        description: "groupのid"
+        required: true
+      responses:
+        201:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                example: "success"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  owner_id:
+                    type: "string"
+                    example: 3
+                  name: 
+                    type: "string"
+                    example: "test group name"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        400:
+          description: "groupが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: Bad Request
+              data:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Name has already been taken"
+        401:
+          description: "name重複時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "You need to sign in or sign up before continuing."
+      security:
+      - access-token: 
+        uid:
+        client:
+    put:
+      tags:
+      - "group"
+      summary: "groupの更新"
+      description: "個別groupを指定して情報を更新"
+      operationId: "group#update"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "group_id"
+        description: "groupのid"
+        required: true
+      - in: "body"
+        name: "group update info"
+        description: "json形式で更新情報を作成"
+        required: true
+        schema:
+          type: object
+          properties:
+            owner_id:
+              type: "integer"
+              example: 1
+            name:
+              type: "string"
+              example: "test group updated"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: "string"
+                example: "Success Group"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  owner_id:
+                    type: "string"
+                    example: 3
+                  name: 
+                    type: "string"
+                    example: "test group updated name"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        400:
+          description: "updateできないときのレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: Bad Request
+              data:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Name has already been taken"
+        401:
+          description: "name重複時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              errors:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "You need to sign in or sign up before continuing."
+        404:
+          description: "groupが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: NilClass Not Found
+              data:
+                type: ""
+                example: ""
+              notes:
+                type: "string"
+                notes: "group is not found"
+      security:
+      - access-token: 
+        uid:
+        client:
+    delete:
+      tags:
+      - "group"
+      summary: "groupの削除"
+      description: "個別のgroupの削除"
+      operationId: "group#destroy"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "group_id"
+        description: "groupのid"
+        required: true
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: "string"
+                example: "Success Group"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  owner_id:
+                    type: "string"
+                    example: 3
+                  name: 
+                    type: "string"
+                    example: "test group updated name"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        400:
+          description: "実在しないgroupを指定し、削除失敗しないレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: Bad Request
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+  /assign/:
+    post:
+      tags:
+      - "assign"
+      summary: "userをgroupにassginする"
+      description: "userとgroupを関連づける中間テーブル。jobsでuserを参照するのに使用する"
+      operationId: "assign#create"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "group_id"
+        description: "groupのid"
+        required: true
+      responses:
+        201:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 201
+              message:
+                type: "string"
+                example: "Created Assign"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  group_id:
+                    type: "integer"
+                    example: 3
+                  user_id:
+                    type: "integer"
+                    example: 2
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "groupまたはuserが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+  /assign/{assign_id}:
+    delete:
+      tags:
+      - "assign"
+      summary: "assignを削除する"
+      description: "userとgroupの関連付けを削除"
+      operationId: "assign#destroy"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "assign_id"
+        description: "assignのid"
+        required: true
+      responses:
+        201:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 201
+              message:
+                type: "string"
+                example: "Created Job"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  group_id:
+                    type: "integer"
+                    example: 3
+                  title:
+                    type: "string"
+                    example: "test job title"
+                  image:
+                    type: "string"
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAAAAAAeW/F+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBRQABBrSkbBKAAAAT0lEQVQoz2M4gxcwjEoPkPSmjau3rNoEFULmQKSPr18/59icM2e27d2J4MClTx05Mn8+SOTUIiQOQve6DRs2rwSat+XAdgRncPh7VBoNAABwbMd4Pq/U3gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNS0yMFQwOTowNDoyNiswOTowMOwn1y0AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDUtMjBUMDk6MDQ6MjYrMDk6MDCdem+RAAAAAElFTkSuQmCC"
+                  owner_id:
+                    type: "integer"
+                    example: 2
+                  base_date_time:
+                    type: "string"
+                    example: "2019-05-28T00:00:00.000Z"
+                  due_date_time:
+                    type: "string"
+                    example: "2019-05-29T00:00:00.000Z"
+                  frequency:
+                    type: "string"
+                    example: "weekly"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "Assignが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+  /job:
+    post:
+      tags:
+      - "job"
+      summary: "jobを新規作成"
+      description: "group傘下にjobを定義"
+      operationId: "job#create"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "job info"
+        description: "jobの新規登録用の情報"
+        required: true
+        schema:
+          type: object
+          properties:
+            group_id:
+              type: "integer"
+              example: 1
+            title:
+              type: "string"
+              example: "test job title"
+            overview:
+              type: "string"
+              example: "test overview"
+            image:
+              type: "string"
+              example: "base64encoded image url"
+            owner_id:
+              type: "integer"
+              example: 1
+            base_date_time:
+              type: "date"
+              example: "2019-06-01T12:01:22.868Z"
+            due_date_time:
+              type: "date"
+              example: "2019-06-02T12:01:22.868Z"
+            frequency:
+              type: "string"
+              example: "no-repeats"
+            is_done:
+              type: "boolean"
+              example: false
+            is_approved:
+              type: "boolean"
+              example: false
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success Assign"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  group_id:
+                    type: "integer"
+                    example: 3
+                  user_id:
+                    type: "integer"
+                    example: 2
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        400:
+          description: "Assignが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "Bad Request"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+    get:
+      tags:
+      - "job"
+      summary: "jobの一覧"
+      description: "current_user傘下のgroup全てに紐づいているjobを一覧表示"
+      operationId: "job#index"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success Assign"
+              data:
+                type: "array"
+                items:
+                  type: "object"
+                  example:
+                    id: 2
+                    group_id: 3
+                    title: "new test job"
+                    overview: "new test job for the second time"
+                    image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAAAAAAeW/F+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBRQABBrSkbBKAAAAT0lEQVQoz2M4gxcwjEoPkPSmjau3rNoEFULmQKSPr18/59icM2e27d2J4MClTx05Mn8+SOTUIiQOQve6DRs2rwSat+XAdgRncPh7VBoNAABwbMd4Pq/U3gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNS0yMFQwOTowNDoyNiswOTowMOwn1y0AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDUtMjBUMDk6MDQ6MjYrMDk6MDCdem+RAAAAAElFTkSuQmCC"
+                    owner_id: 2
+                    base_date_time: "2019-05-28T00:00:00.000Z"
+                    due_date_time: "2019-05-29T00:00:00.000Z"
+                    frequenct: "weekly"
+                    is_done: false
+                    is_aproved: false
+                    created_at: "2019-05-28T00:00:00.000Z"
+                    updated_at: "2019-05-28T00:00:00.000Z"
+        400:
+          description: "Assignが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "Bad Request"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+  /job/{job_id}:
+    get:
+      tags:
+      - "job"
+      summary: "jobを参照"
+      description: "pathで指定したjobの情報を参照"
+      operationId: "job#show"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "job_id"
+        description: "jobの参照用"
+        required: true
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success Job"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  group_id:
+                    type: "integer"
+                    example: 3
+                  title:
+                    type: "string"
+                    example: "new test job"
+                  image:
+                    type: "string"
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAAAAAAeW/F+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBRQABBrSkbBKAAAAT0lEQVQoz2M4gxcwjEoPkPSmjau3rNoEFULmQKSPr18/59icM2e27d2J4MClTx05Mn8+SOTUIiQOQve6DRs2rwSat+XAdgRncPh7VBoNAABwbMd4Pq/U3gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNS0yMFQwOTowNDoyNiswOTowMOwn1y0AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDUtMjBUMDk6MDQ6MjYrMDk6MDCdem+RAAAAAElFTkSuQmCC"
+                  owner_id:
+                    type: "integer"
+                    example: 3
+                  base_date_time:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  due_date_time:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  frequency:
+                    type: "string"
+                    example: "weeklys"
+                  is_done:
+                    type: "boolean"
+                    example: false
+                  is_approved:
+                    type: "boolean"
+                    example: false
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "Assignが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+    put:
+      tags:
+      - "job"
+      summary: "jobを更新"
+      description: "pathで指定したjobの情報を更新"
+      operationId: "job#update"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "job_id"
+        description: "jobの参照用"
+        required: true
+      - in: "body"
+        name: "job update info"
+        description: "jobの参照用"
+        required: true
+        schema:
+          type: object
+          properties:
+            group_id:
+              type: "integer"
+              example: 1
+            title:
+              type: "string"
+              example: "test job title update"
+            overview:
+              type: "string"
+              example: "test overview update"
+            image:
+              type: "string"
+              example: "base64encoded image url update"
+            owner_id:
+              type: "integer"
+              example: 1
+            base_date_time:
+              type: "date"
+              example: "2019-06-01T12:01:22.868Z"
+            due_date_time:
+              type: "date"
+              example: "2019-06-02T12:01:22.868Z"
+            frequency:
+              type: "string"
+              example: "weekly"
+            is_done:
+              type: "boolean"
+              example: true
+            is_approved:
+              type: "boolean"
+              example: true
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success Job"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  group_id:
+                    type: "integer"
+                    example: 3
+                  title:
+                    type: "string"
+                    example: "new test job"
+                  image:
+                    type: "string"
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAAAAAAeW/F+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBRQABBrSkbBKAAAAT0lEQVQoz2M4gxcwjEoPkPSmjau3rNoEFULmQKSPr18/59icM2e27d2J4MClTx05Mn8+SOTUIiQOQve6DRs2rwSat+XAdgRncPh7VBoNAABwbMd4Pq/U3gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNS0yMFQwOTowNDoyNiswOTowMOwn1y0AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDUtMjBUMDk6MDQ6MjYrMDk6MDCdem+RAAAAAElFTkSuQmCC"
+                  owner_id:
+                    type: "integer"
+                    example: 3
+                  base_date_time:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  due_date_time:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  frequency:
+                    type: "string"
+                    example: "weeklys"
+                  is_done:
+                    type: "boolean"
+                    example: false
+                  is_approved:
+                    type: "boolean"
+                    example: false
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "Assignが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+    delete:
+      tags:
+      - "job"
+      summary: "jobを削除"
+      description: "pathで指定したjobの情報を削除"
+      operationId: "job#destroy"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "job_id"
+        description: "jobの参照用"
+        required: true
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success Job"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  group_id:
+                    type: "integer"
+                    example: 3
+                  title:
+                    type: "string"
+                    example: "new test job"
+                  image:
+                    type: "string"
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAAAAAAeW/F+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBRQABBrSkbBKAAAAT0lEQVQoz2M4gxcwjEoPkPSmjau3rNoEFULmQKSPr18/59icM2e27d2J4MClTx05Mn8+SOTUIiQOQve6DRs2rwSat+XAdgRncPh7VBoNAABwbMd4Pq/U3gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNS0yMFQwOTowNDoyNiswOTowMOwn1y0AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDUtMjBUMDk6MDQ6MjYrMDk6MDCdem+RAAAAAElFTkSuQmCC"
+                  owner_id:
+                    type: "integer"
+                    example: 3
+                  base_date_time:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  due_date_time:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  frequency:
+                    type: "string"
+                    example: "weeklys"
+                  is_done:
+                    type: "boolean"
+                    example: false
+                  is_approved:
+                    type: "boolean"
+                    example: false
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "Jobが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+  /steps:
+    post:
+      tags:
+      - "step"
+      summary: "stepを新規作成"
+      description: "group傘下にstepを定義"
+      operationId: "step#create"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "step info"
+        description: "stepの新規登録用の情報"
+        required: true
+        schema:
+          type: object
+          properties:
+            job_id:
+              type: "integer"
+              example: 1
+            content:
+              type: "string"
+              example: "test step title"
+            assigned_user:
+              type: "integer"
+              example: 2
+            image:
+              type: "string"
+              example: "base64encoded image url"
+            due_date:
+              type: "date"
+              example: "2019-06-02T12:01:22.868Z"
+            is_done:
+              type: "boolean"
+              example: false
+            is_approved:
+              type: "boolean"
+              example: false
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success Assign"
+              data:
+                type: "object"
+                properties:
+                  job_id:
+                    type: "integer"
+                    example: 1
+                  content:
+                    type: "string"
+                    example: "test step title"
+                  assigned_user:
+                    type: "integer"
+                    example: 2
+                  image:
+                    type: "string"
+                    example: "base64encoded image url"
+                  due_date:
+                    type: "date"
+                    example: "2019-06-02T12:01:22.868Z"
+                  is_done:
+                    type: "boolean"
+                    example: false
+                  is_approved:
+                    type: "boolean"
+                    example: false
+        404:
+          description: "Assignが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "Not Found"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+    get:
+      tags:
+      - "step"
+      summary: "stepの一覧"
+      description: "current_user傘下のgroup全てに紐づいているjob傘下のstepを一覧表示"
+      operationId: "step#index"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success Assign"
+              data:
+                type: "array"
+                items:
+                  type: "object"
+                  example:
+                    id: 2
+                    job_id: 3
+                    content: "new test step"
+                    assigned_user: "new test step for the second time"
+                    image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAAAAAAeW/F+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBRQABBrSkbBKAAAAT0lEQVQoz2M4gxcwjEoPkPSmjau3rNoEFULmQKSPr18/59icM2e27d2J4MClTx05Mn8+SOTUIiQOQve6DRs2rwSat+XAdgRncPh7VBoNAABwbMd4Pq/U3gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNS0yMFQwOTowNDoyNiswOTowMOwn1y0AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDUtMjBUMDk6MDQ6MjYrMDk6MDCdem+RAAAAAElFTkSuQmCC"
+                    due_date: "2019-06-01T12:01:22.868Z"
+                    is_done: false
+                    is_aproved: false
+                    order: 1
+                    created_at: "2019-05-28T00:00:00.000Z"
+                    updated_at: "2019-05-28T00:00:00.000Z"
+        400:
+          description: "Assignが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "Bad Request"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+  /step/{step_id}:
+    get:
+      tags:
+      - "step"
+      summary: "stepを参照"
+      description: "pathで指定したstepの情報を参照"
+      operationId: "step#show"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "step_id"
+        description: "stepの参照用"
+        required: true
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success step"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  job_id:
+                    type: "integer"
+                    example: 3
+                  content:
+                    type: "string"
+                    example: "new test step"
+                  assigned_id:
+                    type: "integer"
+                    example: 3
+                  image:
+                    type: "string"
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAAAAAAeW/F+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBRQABBrSkbBKAAAAT0lEQVQoz2M4gxcwjEoPkPSmjau3rNoEFULmQKSPr18/59icM2e27d2J4MClTx05Mn8+SOTUIiQOQve6DRs2rwSat+XAdgRncPh7VBoNAABwbMd4Pq/U3gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNS0yMFQwOTowNDoyNiswOTowMOwn1y0AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDUtMjBUMDk6MDQ6MjYrMDk6MDCdem+RAAAAAElFTkSuQmCC"
+                  due_date:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  is_done:
+                    type: "boolean"
+                    example: false
+                  is_approved:
+                    type: "boolean"
+                    example: false
+                  order:
+                    type: "integer"
+                    example: 1
+                  created_at:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "Assignが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+    put:
+      tags:
+      - "step"
+      summary: "stepを更新"
+      description: "pathで指定したstepの情報を更新"
+      operationId: "step#update"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "step_id"
+        description: "stepの参照用"
+        required: true
+      - in: "body"
+        name: "step update info"
+        description: "stepの参照用"
+        required: true
+        schema:
+          type: object
+          properties:
+            job_id:
+              type: "integer"
+              example: 1
+            content:
+              type: "string"
+              example: "test step title"
+            assigned_user:
+              type: "integer"
+              example: 2
+            image:
+              type: "string"
+              example: "base64encoded image url"
+            due_date:
+              type: "date"
+              example: "2019-06-02T12:01:22.868Z"
+            is_done:
+              type: "boolean"
+              example: false
+            is_approved:
+              type: "boolean"
+              example: false
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success step"
+              data:
+                type: "object"
+                properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success step"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  job_id:
+                    type: "integer"
+                    example: 3
+                  content:
+                    type: "string"
+                    example: "new test step"
+                  assigned_id:
+                    type: "integer"
+                    example: 3
+                  image:
+                    type: "string"
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAAAAAAeW/F+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBRQABBrSkbBKAAAAT0lEQVQoz2M4gxcwjEoPkPSmjau3rNoEFULmQKSPr18/59icM2e27d2J4MClTx05Mn8+SOTUIiQOQve6DRs2rwSat+XAdgRncPh7VBoNAABwbMd4Pq/U3gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNS0yMFQwOTowNDoyNiswOTowMOwn1y0AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDUtMjBUMDk6MDQ6MjYrMDk6MDCdem+RAAAAAElFTkSuQmCC"
+                  due_date:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  is_done:
+                    type: "boolean"
+                    example: false
+                  is_approved:
+                    type: "boolean"
+                    example: false
+                  order:
+                    type: "integer"
+                    example: 1
+                  created_at:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "Assignが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+    delete:
+      tags:
+      - "step"
+      summary: "stepを削除"
+      description: "pathで指定したstepの情報を削除"
+      operationId: "step#destroy"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "step_id"
+        description: "stepの参照用"
+        required: true
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success step"
+              data:
+                type: "object"
+                properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success step"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  job_id:
+                    type: "integer"
+                    example: 3
+                  content:
+                    type: "string"
+                    example: "new test step"
+                  assigned_id:
+                    type: "integer"
+                    example: 3
+                  image:
+                    type: "string"
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAAAAAAeW/F+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjBRQABBrSkbBKAAAAT0lEQVQoz2M4gxcwjEoPkPSmjau3rNoEFULmQKSPr18/59icM2e27d2J4MClTx05Mn8+SOTUIiQOQve6DRs2rwSat+XAdgRncPh7VBoNAABwbMd4Pq/U3gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNS0yMFQwOTowNDoyNiswOTowMOwn1y0AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDUtMjBUMDk6MDQ6MjYrMDk6MDCdem+RAAAAAElFTkSuQmCC"
+                  due_date:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  is_done:
+                    type: "boolean"
+                    example: false
+                  is_approved:
+                    type: "boolean"
+                    example: false
+                  order:
+                    type: "integer"
+                    example: 1
+                  created_at:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "string"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "Stepが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: ""
+      security:
+      - access-token: 
+        uid:
+        client:
+securityDefinitions:
+  access-token:
+    type: "apiKey"
+    name: "access-token"
+    in: "header"
+    value: "WB4HXdfRAenKUxqgIMvxIw"
+  uid:
+    type: "apiKey"
+    name: "uid"
+    in: "header"
+    value: "test@test.com"
+  client:
+    type: "apiKey"
+    name: "client"
+    in: "header"
+    value: "xvUwrt1-gyMsPf1bcqg1tw"

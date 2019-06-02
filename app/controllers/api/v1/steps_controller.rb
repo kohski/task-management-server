@@ -1,5 +1,5 @@
 class Api::V1::StepsController < ApplicationController
-  before_action :authenticate_user!	
+  before_action :authenticate_api_v1_user!	
 
   def create
     step = Step.new(step_params)
@@ -37,7 +37,7 @@ class Api::V1::StepsController < ApplicationController
 
   def index
     # ToDo: resolve N+1 problem
-    steps = Group.where(id: current_user.assigns.pluck(:group_id)).map{|group| group.steps}.flatten
+    steps = Group.where(id: current_api_v1_user.assigns.pluck(:group_id)).map{|group| group.steps}.flatten
     if steps.empty?
       response_not_found(steps)
     else

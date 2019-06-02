@@ -1,5 +1,5 @@
 class Api::V1::JobsController < ApplicationController
-  before_action :authenticate_user!	
+  before_action :authenticate_api_v1_user!	
 
   def create
     group = Group.find_by(id: job_params[:group_id])
@@ -18,7 +18,7 @@ class Api::V1::JobsController < ApplicationController
   def show
     job = Job.find_by(id: params[:id])
 
-    if job && job.group.users.pluck(:id).index(current_user.id)
+    if job && job.group.users.pluck(:id).index(current_api_v1_user.id)
       response_success(job)
     else
       response_not_found(job)
@@ -69,7 +69,7 @@ class Api::V1::JobsController < ApplicationController
 
     # at first get ids of groups which current user belongs to.
     # next get jobs info from group ids
-    group_ids = Assign.where(user_id: current_user.id).pluck(:group_id)
+    group_ids = Assign.where(user_id: current_api_v1_user.id).pluck(:group_id)
     jobs = Job.where(group_id: group_ids)
 
     if jobs.length > 0
