@@ -85,7 +85,7 @@ class Api::V1::JobsController < ApplicationController
     if !jobs.empty?
       response_success(jobs)
     else
-      response_not_found_with_notes(jobs, "job is not found")
+      response_not_found_with_notes(jobs, "public job is not found")
     end
   end
 
