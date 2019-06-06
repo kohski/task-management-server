@@ -224,4 +224,46 @@ RSpec.describe "Jobs", type: :request do
       expect(res_str["message"]).to include("Not Found")
     end
   end
+
+  context "GET /public_jobs, jobs#public_jobs" do
+    login
+    it "return 200 with valid request" do
+      public_job = FactoryBot.create(:job, is_public: true)
+      public_job_second = FactoryBot.create(:job, is_public: true)
+      private_job = FactoryBot.create(:job)
+      get public_jobs_api_v1_jobs_path, headers: User.first.create_new_auth_token
+      res_str = JSON.parse(response.body)
+
+      expect(res_str["status"]).to be(200)
+      expect(res_str["message"]).to include("Success")
+      expect(res_str["data"].length).to eq(Job.where(is_public: true).length)
+      expect(res_str["data"][0]["id"]).to eq(public_job.id)
+      expect(res_str["data"][0]["group_id"]).to eq(public_job.group_id)
+      expect(res_str["data"][0]["title"]).to eq(public_job.title)
+      expect(res_str["data"][0]["overview"]).to eq(public_job.overview)
+      expect(res_str["data"][0]["image"]).to eq(public_job.image)
+      expect(res_str["data"][0]["owner_id"]).to eq(public_job.owner_id)
+      expect(Time.zone.parse(res_str["data"][0]["base_date_time"]).strftime("%Y-%m-%d %H:%M:%S")).to eq(public_job.base_date_time.strftime("%Y-%m-%d %H:%M:%S"))
+      expect(Time.zone.parse(res_str["data"][0]["due_date_time"]).strftime("%Y-%m-%d %H:%M:%S")).to eq(public_job.due_date_time.strftime("%Y-%m-%d %H:%M:%S"))
+      expect(res_str["data"][0]["frequency"]).to eq(public_job.frequency)
+      expect(res_str["data"][0]["is_done"]).to eq(public_job.is_done)
+      expect(res_str["data"][0]["is_approved"]).to eq(public_job.is_approved)
+    end
+
+    it "return 404 without jobs" do
+      get public_jobs_api_v1_jobs_path, headers: User.first.create_new_auth_token
+      res_str = JSON.parse(response.body)
+      expect(res_str["status"]).to be(404)
+      expect(res_str["message"]).to include("Not Found")
+    end
+
+    it "return 404 when all jobs are not public" do
+      private_job = FactoryBot.create(:job)
+      private_job_second = FactoryBot.create(:job)
+      get public_jobs_api_v1_jobs_path, headers: User.first.create_new_auth_token
+      res_str = JSON.parse(response.body)
+      expect(res_str["status"]).to be(404)
+      expect(res_str["message"]).to include("Not Found")
+    end
+  end
 end
