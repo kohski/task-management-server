@@ -31,4 +31,11 @@ Rails.application.routes.draw do
       resources :steps, only:[:create, :destroy, :update, :show, :index]
     end
   end
+
+  namespace :api do
+    namespace :v1 do
+      resources :favorites, only:[:create, :destroy]
+    end
+  end
+
 end

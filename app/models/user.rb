@@ -13,7 +13,7 @@ class User < ActiveRecord::Base
 
   validates :name, presence: true, length: { maximum: 64 }
   validates :email, presence: true, uniqueness: true, format:{with:/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i }
-  validates :admin, presence: true, default: false
+  validates :admin, default: false
   validates :description, length:{ maximum: 1000 }
 
   has_many :assigns, dependent: :destroy
