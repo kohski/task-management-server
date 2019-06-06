@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Favorites", type: :request do
-  describe "GET /favorites" do
+  describe "Favorites" do
     context "Post /favorites, favorite#create" do
       login
       it "returns 201 with vadlid request" do
