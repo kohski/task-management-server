@@ -14,8 +14,8 @@ RSpec.describe Group, type: :model do
         expect(group.errors[:name]).to_not include("can't be blank")
       end
       it "is invalid with duplicated name" do
-        FactoryBot.create(:group)
-        group = FactoryBot.build(:group)
+        group_before = FactoryBot.create(:group)
+        group = FactoryBot.build(:group, name: group_before.name)
         group.valid?
         expect(group.errors[:name]).to include("has already been taken")
       end
