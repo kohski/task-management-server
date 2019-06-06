@@ -2067,7 +2067,7 @@ paths:
       - access-token: 
         uid:
         client:
-  /tag/:
+  /tag:
     post:
       tags:
       - "tag"
@@ -2079,9 +2079,9 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "path"
-        name: "job_id"
-        description: "hobのid"
+      - in: "header"
+        name: "name"
+        description: "tagの名称"
         required: true
       responses:
         200:
@@ -2166,11 +2166,6 @@ paths:
       - "application/json"
       produces:
       - "application/json"
-      parameters:
-      - in: "path"
-        name: "job_id"
-        description: "hobのid"
-        required: true
       responses:
         200:
           description: "タグが存在する場合"
@@ -2278,6 +2273,144 @@ paths:
               notes:
                 type: "string"
                 example: "tag is not found"
+      security:
+      - access-token: 
+        uid:
+        client:
+  /job_tags/:
+    post:
+      tags:
+      - "job_tag"
+      summary: "job_tagの関連付け新規登録"
+      description: "jobとtagの中間テーブル"
+      operationId: "job_tags#create"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "job_id"
+        description: "jobのid"
+        required: true
+      - in: "header"
+        name: "tag_id"
+        description: "tagのid"
+        required: true
+      responses:
+        201:
+          description: "新規作成成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 201
+              message:
+                type: "string"
+                example: "Created JobTag"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  job_id:
+                    type: "integer"
+                    example: 2
+                  tag_id:
+                    type: "integer"
+                    example: 3
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "リソースのcreate/find失敗時"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: null
+              notes:
+                type: "string"
+                example: "[tag / job] is not found"
+      security:
+      - access-token: 
+        uid:
+        client:
+  /job_tags/{job_tag_id}:
+    delete:
+      tags:
+      - "job_tag"
+      summary: "job_tagの関連付け削除"
+      description: "jobとtagの中間テーブル削除"
+      operationId: "job_tags#destroy"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "job_tag_id"
+        description: "job_tagのid"
+        required: true
+      responses:
+        201:
+          description: "新規作成成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 201
+              message:
+                type: "string"
+                example: "Created JobTag"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  job_id:
+                    type: "integer"
+                    example: 2
+                  tag_id:
+                    type: "integer"
+                    example: 3
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "リソースのcreate/find失敗時"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: null
+              notes:
+                type: "string"
+                example: "[tag / job] is not found"
       security:
       - access-token: 
         uid:

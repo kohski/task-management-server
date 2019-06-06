@@ -24,8 +24,6 @@ class Api::V1::TagsController < ApplicationController
     else
       response_not_found_with_notes(tag, "tag is not found")
     end
-
-
   end
 
   def index
