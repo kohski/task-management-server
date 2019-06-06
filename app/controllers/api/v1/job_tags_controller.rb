@@ -27,7 +27,7 @@ class Api::V1::JobTagsController < ApplicationController
       job_tag.destroy
       response_success(job_tag)
     else
-      response_not_found_with_notes(tag, "tag is not found")
+      response_not_found_with_notes(job_tag, "tag is not found")
     end
   end
 
