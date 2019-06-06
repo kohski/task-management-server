@@ -10,7 +10,7 @@ jobs:
       - image: circleci/ruby:2.5.1-node-browsers
         environment:
           BUNDLER_VERSION: 2.0.1
-          DATABASE_URL: "postgres://task-api-server@localhost/task-api-server-test"
+          DATABASE_URL: "postgres://myapp@localhost/myapp-test"
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -18,8 +18,9 @@ jobs:
       # - image: circleci/postgres:9.4
       - image: circleci/postgres:11.3-alpine
         environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: circle-test_test
+          POSTGRES_USER: myapp
+          POSTGRES_DB: myapp-test
+          POSTGRES_PASSWORD: ""
 
     working_directory: ~/repo
 
