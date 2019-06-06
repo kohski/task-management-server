@@ -23,7 +23,11 @@ Rails.application.routes.draw do
   end
   namespace :api do
     namespace :v1 do
-      resources :jobs, only:[:create, :destroy, :update, :show, :index]
+      resources :jobs, only:[:create, :destroy, :update, :show, :index] do
+        collection do
+          get :public_jobs
+        end
+      end
     end
   end
   namespace :api do

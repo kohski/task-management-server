@@ -10,6 +10,7 @@ class Job < ApplicationRecord
   # validates :frequency
   validates :is_done, default: false
   validates :is_approved, default: false
+  validates :is_public, default: false
 
   belongs_to :group, class_name: 'Group', foreign_key: :group_id
   belongs_to :owner, class_name: 'User', foreign_key: :owner_id
