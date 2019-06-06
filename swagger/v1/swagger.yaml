@@ -2067,6 +2067,221 @@ paths:
       - access-token: 
         uid:
         client:
+  /tag/:
+    post:
+      tags:
+      - "tag"
+      summary: "tagの新規登録"
+      description: "jobとuserの中間テーブル。current_userからjobに対していいねをする"
+      operationId: "tag#create"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "job_id"
+        description: "hobのid"
+        required: true
+      responses:
+        200:
+          description: "同名タグが存在する場合"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success Tag"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  name:
+                    type: "test tag"
+                    example: 3
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        201:
+          description: "新規作成成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 201
+              message:
+                type: "string"
+                example: "Created tag"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  name:
+                    type: "test tag"
+                    example: 3
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        400:
+          description: "リソースのcreate/find失敗時"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "Bad Request"
+              data:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Name can't be blank"
+      security:
+      - access-token: 
+        uid:
+        client:
+    get:
+      tags:
+      - "tag"
+      summary: "tagの一覧取得"
+      description: "tagとjobを関連づける"
+      operationId: "tag#index"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "job_id"
+        description: "hobのid"
+        required: true
+      responses:
+        200:
+          description: "タグが存在する場合"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success Tag"
+              data:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "integer"
+                      example: 1
+                    name:
+                      type: "string"
+                      example: "test tag"
+                    created_at:
+                      type: "integer"
+                      example: "2019-06-01T12:01:22.868Z"
+                    updated_at:
+                      type: "integer"
+                      example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "タグが存在しない場合のresponse"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "Tag::ActiveRecord_Relation Not Found"
+              data:
+                type: "array"
+                items: []
+      security:
+      - access-token: 
+        uid:
+        client:
+  /tag/{tag_id}:
+    delete:
+      tags:
+      - "tag"
+      summary: "tagを削除する"
+      description: "tagとjobの関連付けを削除"
+      operationId: "tag#destroy"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "tag_id"
+        description: "tagのid"
+        required: true
+      responses:
+        200:
+          description: "成功時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                example: "Success tag"
+              data:
+                type: "object"
+                properties:
+                  id:
+                    type: "integer"
+                    example: 1
+                  name:
+                    type: "string"
+                    example: "test tag name"
+                  created_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.868Z"
+                  updated_at:
+                    type: "integer"
+                    example: "2019-06-01T12:01:22.929Z"
+        404:
+          description: "tagが実在しない時のレスポンス"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "NilClass Not Found"
+              data:
+                type: ""
+                example: null
+              notes:
+                type: "string"
+                example: "tag is not found"
+      security:
+      - access-token: 
+        uid:
+        client:
 securityDefinitions:
   access-token:
     type: "apiKey"

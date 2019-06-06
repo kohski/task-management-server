@@ -17,4 +17,7 @@ class Job < ApplicationRecord
   has_many :steps, dependent: :destroy
   has_many :favorites, dependent: :destroy
   has_many :favorite_users, through: :favorites, source: :user
+  has_many :job_tag
+  has_many :job_tag_tags, through: :job_tags, source: :tag
+
 end

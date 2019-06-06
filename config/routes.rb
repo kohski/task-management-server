@@ -38,4 +38,17 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :api do
+    namespace :v1 do
+      resources :job_tags, only:[:create, :destroy]
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :tags, only:[:create, :destroy, :index]
+    end
+  end
+
+
 end
