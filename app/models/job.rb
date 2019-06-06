@@ -15,4 +15,6 @@ class Job < ApplicationRecord
   belongs_to :owner, class_name: 'User', foreign_key: :owner_id
   
   has_many :steps, dependent: :destroy
+  has_many :favorites, dependent: :destroy
+  has_many :favorite_users, through: :favorites, source: :user
 end
