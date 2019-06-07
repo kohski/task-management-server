@@ -15,7 +15,7 @@ jobs:
           PGHOST: 127.0.0.1
           PGUSER: myapp-test
           RAILS_ENV: test
-          
+
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
