@@ -1,4 +1,5 @@
 # Readme
+[![codecov](https://codecov.io/gh/kohski/task-management-server/branch/master/graph/badge.svg)](https://codecov.io/gh/kohski/task-management-server)
 ## バージョン情報
   - フロントエンド
     nuxt.js 2.8.0
