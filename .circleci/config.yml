@@ -3,6 +3,8 @@
 # Check https://circleci.com/docs/2.0/language-ruby/ for more details
 #
 version: 2
+orbs:
+  codecov: codecov/codecov@1.0.2
 jobs:
   build:
     docker:
@@ -13,6 +15,7 @@ jobs:
           PGHOST: 127.0.0.1
           PGUSER: myapp-test
           RAILS_ENV: test
+          
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -74,6 +77,8 @@ jobs:
               --out /tmp/test-results/rspec.xml \
               --format progress \
               $TEST_FILES
+      - codecov/upload:
+          file: {{ coverage_report_filepath }}
 
       # collect reports
       - store_test_results:

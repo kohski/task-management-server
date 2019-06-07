@@ -29,3 +29,4 @@ config/environments/*.local.yml
 coverage
 
 .env
+.codecov.yml
