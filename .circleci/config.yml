@@ -78,9 +78,6 @@ jobs:
               --format progress \
               $TEST_FILES
 
-      - codecov/upload:
-          file: ./coverage.out
-
       # collect reports
       - store_test_results:
           path: /tmp/test-results
@@ -89,3 +86,6 @@ jobs:
           destination: test-results
       - store_artifacts:
           path: coverage
+
+      - codecov/upload:
+          file: ./coverage.out
