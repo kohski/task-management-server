@@ -78,7 +78,7 @@ jobs:
               --format progress \
               $TEST_FILES
       - codecov/upload:
-          file: {{ coverage_report_filepath }}
+          file: ./coverage.out
 
       # collect reports
       - store_test_results:
