@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-ruby/ for more details
 #
-version: 2
+version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.2
 jobs:
@@ -77,6 +77,7 @@ jobs:
               --out /tmp/test-results/rspec.xml \
               --format progress \
               $TEST_FILES
+
       - codecov/upload:
           file: ./coverage.out
 
