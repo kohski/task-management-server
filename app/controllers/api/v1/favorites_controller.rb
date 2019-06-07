@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V1::FavoritesController < ApplicationController
   before_action :authenticate_api_v1_user!
 
@@ -15,12 +17,11 @@ class Api::V1::FavoritesController < ApplicationController
       favorite.destroy
       response_success(favorite)
     else
-      response_not_found_with_notes(favorite, "favorite is not found")
+      response_not_found_with_notes(favorite, 'favorite is not found')
     end
   end
 
   def favorite_params
     params.require(:favorite).permit(:job_id, :user_id)
   end
-
 end

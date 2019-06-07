@@ -1,24 +1,25 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class GroupsControllerTest < ActionDispatch::IntegrationTest
-  test "should get show" do
+  test 'should get show' do
     get groups_show_url
     assert_response :success
   end
 
-  test "should get create" do
+  test 'should get create' do
     get groups_create_url
     assert_response :success
   end
 
-  test "should get destroy" do
+  test 'should get destroy' do
     get groups_destroy_url
     assert_response :success
   end
 
-  test "should get update" do
+  test 'should get update' do
     get groups_update_url
     assert_response :success
   end
-
 end

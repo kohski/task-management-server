@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class Api::V1::GroupsController < ApplicationController
-  before_action :authenticate_api_v1_user!	
+  before_action :authenticate_api_v1_user!
 
   def show
     group = Group.find_by(id: params[:id])
@@ -33,7 +35,7 @@ class Api::V1::GroupsController < ApplicationController
     group = Group.find_by(id: params[:id])
 
     unless group
-      response_not_found_with_notes(group, "group is not found")
+      response_not_found_with_notes(group, 'group is not found')
       return
     end
 

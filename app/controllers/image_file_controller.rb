@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ImageFileController < ApplicationController
   def upload
     raise ArgumentError, 'invalid params' if params[:image].blank? || params[:name].blank?
@@ -9,10 +11,10 @@ class ImageFileController < ApplicationController
     imageFile.save!
 
     render json: {
-        result: "SUCCESS",
-        title: imageFile.title,
-        name: imageFile.name,
-        image: imageFile.image.url
+      result: 'SUCCESS',
+      title: imageFile.title,
+      name: imageFile.name,
+      image: imageFile.image.url
     }
   end
 end

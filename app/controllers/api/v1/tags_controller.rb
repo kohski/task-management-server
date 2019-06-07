@@ -1,14 +1,15 @@
+# frozen_string_literal: true
+
 class Api::V1::TagsController < ApplicationController
-  before_action :authenticate_api_v1_user!	
+  before_action :authenticate_api_v1_user!
 
   def create
-
     exists_tag = tag_exists_check(tag_params[:name])
     if exists_tag
       response_success(exists_tag)
       return
     end
-  
+
     tag = Tag.create(tag_params)
     if tag.valid?
       response_created(tag)
@@ -22,7 +23,7 @@ class Api::V1::TagsController < ApplicationController
       tag.destroy
       response_success(tag)
     else
-      response_not_found_with_notes(tag, "tag is not found")
+      response_not_found_with_notes(tag, 'tag is not found')
     end
   end
 
@@ -33,7 +34,6 @@ class Api::V1::TagsController < ApplicationController
     else
       response_not_found(tags)
     end
-
   end
 
   private
@@ -45,5 +45,4 @@ class Api::V1::TagsController < ApplicationController
   def tag_exists_check(name)
     Tag.find_by(name: name)
   end
-
 end

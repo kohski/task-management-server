@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 class Api::V1::StepsController < ApplicationController
-  before_action :authenticate_api_v1_user!	
+  before_action :authenticate_api_v1_user!
 
   def create
     step = Step.new(step_params)
     if step.save
       response_created(step)
     else
-      response_not_found_with_notes(step.attributes,"step is not found")
+      response_not_found_with_notes(step.attributes, 'step is not found')
     end
   end
 
@@ -32,12 +34,11 @@ class Api::V1::StepsController < ApplicationController
     else
       response_not_found(step)
     end
-
   end
 
   def index
-    # ToDo: resolve N+1 problem
-    steps = Group.where(id: current_api_v1_user.assigns.pluck(:group_id)).map{|group| group.steps}.flatten
+    # TODO: resolve N+1 problem
+    steps = Group.where(id: current_api_v1_user.assigns.pluck(:group_id)).map(&:steps).flatten
     if steps.empty?
       response_not_found(steps)
     else
@@ -47,7 +48,7 @@ class Api::V1::StepsController < ApplicationController
 
   def destroy
     step = Step.find_by(id: params[:id])
-    unless step 
+    unless step
       response_not_found(step)
       return
     end
@@ -57,7 +58,6 @@ class Api::V1::StepsController < ApplicationController
     else
       response_bad_request(step)
     end
-
   end
 
   private
@@ -65,5 +65,4 @@ class Api::V1::StepsController < ApplicationController
   def step_params
     params.require(:step).permit(:job_id, :content, :assigned_user, :image, :due_date, :is_done, :is_approved, :order)
   end
-
 end

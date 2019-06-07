@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :job_tag do
     job_id { Job.first ? Job.first.id : FactoryBot.create(:job).id }

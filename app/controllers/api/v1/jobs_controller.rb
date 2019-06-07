@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class Api::V1::JobsController < ApplicationController
-  before_action :authenticate_api_v1_user!	
+  before_action :authenticate_api_v1_user!
 
   def create
     group = Group.find_by(id: job_params[:group_id])
@@ -26,15 +28,12 @@ class Api::V1::JobsController < ApplicationController
   end
 
   def update
-
     job = Job.find_by(id: params[:id])
 
-    unless job
-      response_not_found(job)
-    end
-      
-    if job_params[:group_id] && !Group.find_by(id: job_params[:group_id])     
-      response_not_found_with_notes(job.attributes, "group is not found")
+    response_not_found(job) unless job
+
+    if job_params[:group_id] && !Group.find_by(id: job_params[:group_id])
+      response_not_found_with_notes(job.attributes, 'group is not found')
       return
     end
 
@@ -62,7 +61,7 @@ class Api::V1::JobsController < ApplicationController
   def index
     jobs = Job.all
 
-    if jobs.length == 0
+    if jobs.empty?
       response_not_found(jobs)
       return
     end
@@ -72,12 +71,11 @@ class Api::V1::JobsController < ApplicationController
     group_ids = Assign.where(user_id: current_api_v1_user.id).pluck(:group_id)
     jobs = Job.where(group_id: group_ids)
 
-    if jobs.length > 0
+    if !jobs.empty?
       response_success(jobs)
     else
       response_not_found(jobs)
     end
-
   end
 
   def public_jobs
@@ -85,14 +83,13 @@ class Api::V1::JobsController < ApplicationController
     if !jobs.empty?
       response_success(jobs)
     else
-      response_not_found_with_notes(jobs, "public job is not found")
+      response_not_found_with_notes(jobs, 'public job is not found')
     end
   end
 
   private
 
   def job_params
-    params.require(:job).permit(:group_id, :title, :overview, :image, :owner_id, :base_date_time, :due_date_time, :frequency,:is_done, :is_approved)
+    params.require(:job).permit(:group_id, :title, :overview, :image, :owner_id, :base_date_time, :due_date_time, :frequency, :is_done, :is_approved)
   end
-
 end

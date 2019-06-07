@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'
@@ -13,17 +15,17 @@ Rails.application.routes.draw do
   post 'image_file/upload'
   namespace :api do
     namespace :v1 do
-      resources :groups, only:[:create, :destroy, :update, :show, :index]
+      resources :groups, only: %i[create destroy update show index]
     end
   end
   namespace :api do
     namespace :v1 do
-      resources :assigns, only:[:create, :destroy]
+      resources :assigns, only: %i[create destroy]
     end
   end
   namespace :api do
     namespace :v1 do
-      resources :jobs, only:[:create, :destroy, :update, :show, :index] do
+      resources :jobs, only: %i[create destroy update show index] do
         collection do
           get :public_jobs
         end
@@ -32,27 +34,25 @@ Rails.application.routes.draw do
   end
   namespace :api do
     namespace :v1 do
-      resources :steps, only:[:create, :destroy, :update, :show, :index]
+      resources :steps, only: %i[create destroy update show index]
     end
   end
 
   namespace :api do
     namespace :v1 do
-      resources :favorites, only:[:create, :destroy]
+      resources :favorites, only: %i[create destroy]
     end
   end
 
   namespace :api do
     namespace :v1 do
-      resources :job_tags, only:[:create, :destroy]
+      resources :job_tags, only: %i[create destroy]
     end
   end
 
   namespace :api do
     namespace :v1 do
-      resources :tags, only:[:create, :destroy, :index]
+      resources :tags, only: %i[create destroy index]
     end
   end
-
-
 end

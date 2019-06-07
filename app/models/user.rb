@@ -7,14 +7,14 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable,
-        #  :trackable,
-        :validatable
+         #  :trackable,
+         :validatable
   include DeviseTokenAuth::Concerns::User
 
   validates :name, presence: true, length: { maximum: 64 }
-  validates :email, presence: true, uniqueness: true, format:{with:/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i }
+  validates :email, presence: true, uniqueness: true, format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i }
   validates :admin, default: false
-  validates :description, length:{ maximum: 1000 }
+  validates :description, length: { maximum: 1000 }
 
   has_many :assigns, dependent: :destroy
   has_many :groups, dependent: :destroy, foreign_key: :owner_id
